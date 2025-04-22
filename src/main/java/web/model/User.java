@@ -1,6 +1,7 @@
 package web.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 @Entity
 @Table(name = "users")
@@ -8,15 +9,28 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+
+    @NotBlank(message = "Имя не может быть пустым")
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё\\s-]+$",
+            message = "Допустимы только буквы, пробелы и дефисы")
     private String name;
-    @Column(nullable = false)
+
+    @NotBlank(message = "Фамилия не может быть пустой")
+    @Pattern(regexp = "^[A-Za-zА-Яа-яЁё\\s-]+$",
+            message = "Допустимы только буквы, пробелы и дефисы")
     private String lastName;
-    @Column(nullable = false)
+
+    @Positive(message = "Возраст должен быть положительным")
+    @Max(value = 120, message = "Возраст не может быть больше 120 лет")
     private Byte age;
 
     public User() {
+    }
 
+    public User(String name, String lastName, Byte age) {
+        this.name = name;
+        this.lastName = lastName;
+        this.age = age;
     }
 
     public User(Long id, String name, String lastName, Byte age) {
@@ -57,7 +71,7 @@ public class User {
     public void setAge(Byte age) {
         this.age = age;
     }
-
+    
     @Override
     public String toString() {
         return "User{" +

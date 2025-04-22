@@ -19,13 +19,13 @@ public class UserServiceImpl implements UserServiceInterface{
     @Override
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.getAllUsers();
     }
 
     @Override
     @Transactional
-    public User findById(Long id) {
-        return userRepository.findById(id);
+    public User getUserById(Long id) {
+        return userRepository.getUserById(id);
     }
 
     @Override

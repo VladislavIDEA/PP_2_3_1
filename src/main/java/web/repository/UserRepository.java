@@ -13,12 +13,12 @@ public class UserRepository implements UserRepo {
     private EntityManager entityManager;
 
     @Override
-    public List<User> findAll() {
+    public List<User> getAllUsers() {
         return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
     }
 
     @Override
-    public User findById(Long id) {
+    public User getUserById(Long id) {
         return entityManager.find(User.class, id);
     }
 
@@ -34,7 +34,7 @@ public class UserRepository implements UserRepo {
 
     @Override
     public void deleteById(Long id) {
-        User user = findById(id);
+        User user = getUserById(id);
         if(user!= null) {
             entityManager.remove(user);
         }

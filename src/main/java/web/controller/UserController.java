@@ -3,12 +3,13 @@ package web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserServiceInterface;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping("/users")
@@ -21,52 +22,48 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public String listUsers(Model model) {
-        model.addAttribute("users", userService.getAllUsers());
-        return "users/list";
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "list";
     }
 
     @GetMapping("/add")
-    public String showAdd(Model model) {
+    public String showAddForm(Model model) {
         model.addAttribute("user", new User());
-        return "users/add";
+        return "add";
     }
 
     @PostMapping("/add")
-    public String addUser(@RequestParam String name,
-                          @RequestParam String lastName,
-                          @RequestParam Byte age) {
-        User user = new User();
-        user.setName(name);
-        user.setLastName(lastName);
-        user.setAge(age);
+    public String addUser(@Valid @ModelAttribute("user") User user,
+                          BindingResult result) {
+        if (result.hasErrors()) {
+            return "add";
+        }
         userService.save(user);
-        return "redirect:/users";
+        return "redirect:/users/list";
     }
 
     @GetMapping("/edit")
-    public String showEdit(@RequestParam Long id, Model model) {
-        model.addAttribute("user", userService.findById(id));
-        return "users/edit";
+    public String showEditForm(@RequestParam Long id, Model model) {
+        model.addAttribute("user", userService.getUserById(id));
+        return "edit";
     }
 
     @PostMapping("/edit")
-    public String editUser(@RequestParam Long id,
-                           @RequestParam String name,
-                           @RequestParam String lastName,
-                           @RequestParam Byte age) {
-        User user = new User();
-        user.setName(name);
-        user.setLastName(lastName);
-        user.setAge(age);
+    public String editUser(@Valid @ModelAttribute("user") User user,
+                           BindingResult result) {
+        if (result.hasErrors()) {
+            return "edit";
+        }
         userService.save(user);
-        return "redirect:/users";
+        return "redirect:/users/list";
     }
 
     @PostMapping("/delete")
     public String deleteUser(@RequestParam Long id) {
         userService.deleteById(id);
-        return "redirect:/users";
+        return "redirect:/users/list";
     }
 }
